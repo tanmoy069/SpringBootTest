@@ -1,4 +1,4 @@
-package com.tanmoy.springboottest.client;
+package com.tanmoy.springboottest.config;
 
 import com.tanmoy.springboottest.constant.KafkaTopics;
 import org.apache.kafka.clients.admin.AdminClientConfig;

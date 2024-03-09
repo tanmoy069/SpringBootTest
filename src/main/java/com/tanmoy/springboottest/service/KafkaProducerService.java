@@ -23,7 +23,7 @@ public class KafkaProducerService {
         if (kafkaAdminClient.verifyConnection()) {
             logger.info(String.format("$$$$ => Producing message: %s", object));
             String message = new Gson().toJson(object);
-            CompletableFuture<SendResult<String, String>> future = this.kafkaTemplate.send(topic, message);
+            CompletableFuture<SendResult<String, String>> future = this.kafkaTemplate.send(topic, "user", message);
             future.whenComplete((result, ex) -> {
                 if (ex == null) {
                     logger.info("Sent message=[" + message +
