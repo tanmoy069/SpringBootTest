@@ -46,7 +46,6 @@ public class UserServiceImpl implements UserService {
         try {
             UserCache userCache = userCacheService.findById(user.getUserId());
             user = repository.save(user);
-            System.out.println("userCahce: " + userCache);
             if (Objects.nonNull(userCache)) {
                 log.info("Updating user info in cache");
                 userDto.updateUser(userCache);
@@ -65,7 +64,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto findById(Long id) {
         UserCache userCache = userCacheService.findById(id);
-        System.out.println("userCache: " + userCache);
         if (Objects.nonNull(userCache)) {
             log.info("User returning from redis cache");
             return UserDto.from(userCache);
@@ -75,8 +73,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean deleteUser(Long id) {
         User user = findUserById(id);
+        try {
+            repository.delete(user);
+            userCacheService.delete(id);
+            return true;
+        } catch (Exception e) {
+            log.error("Failed to delete user due to: " + e.getMessage());
+        }
         return false;
     }
 

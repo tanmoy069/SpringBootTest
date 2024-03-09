@@ -11,4 +11,5 @@ public interface UserCacheService {
     void delete(Long id);
     UserCache findById(Long id);
     Map<Long, UserCache> getAll();
+
 }

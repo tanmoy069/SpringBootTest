@@ -40,7 +40,7 @@ public class UserController {
         return ok(userService.findAll());
     }
 
-    @GetMapping(value = "/delete/{id}")
+    @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<Object> deleteUser(@PathVariable Long id) {
         if (Objects.isNull(id)) {
             return ok("Please provide user id to delete user");
