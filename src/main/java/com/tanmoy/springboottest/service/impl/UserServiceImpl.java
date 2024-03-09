@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -61,24 +62,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findByUsername(String username) {
-        return UserDto.from(repository.findByUsername(username).orElseThrow(() -> {
-            log.warn("No user found with username : " + username);
-            new RuntimeException("No user found with username : " + username);
-            return null;
-        }));
-    }
-
-    @Override
     public boolean deleteUser(Long id) {
         User user = findUserById(id);
         return false;
+    }
+
+    @Override
+    public List<UserDto> findAll() {
+        return repository.findAll().stream().map(UserDto::from).toList();
     }
 
     private User findUserById(Long id) {
         return repository.findById(id).orElseThrow(() -> {
             log.warn("No user found with id : " + id);
             new RuntimeException("No user found with id : " + id);
+            return null;
+        });
+    }
+
+    private User findByUsername(String username) {
+        return repository.findByUsername(username).orElseThrow(() -> {
+            log.warn("No user found with username : " + username);
+            new RuntimeException("No user found with username : " + username);
             return null;
         });
     }

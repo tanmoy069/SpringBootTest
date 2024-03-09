@@ -30,9 +30,9 @@ public class UserController {
         return ok(userService.findById(id));
     }
 
-    @GetMapping(value = "/find-by")
-    public ResponseEntity<Object> findByUsername(@RequestParam String username) {
-        return ok(userService.findByUsername(username));
+    @GetMapping(value = "/find-all")
+    public ResponseEntity<Object> findAll() {
+        return ok(userService.findAll());
     }
 
     @GetMapping(value = "/delete/{id}")
