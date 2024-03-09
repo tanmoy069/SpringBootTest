@@ -8,7 +8,7 @@ import org.springframework.beans.BeanUtils;
 @Data
 public class UserDto {
 
-    private int userId;
+    private Long userId;
     private String username;
     private String password;
     private boolean isActive;
@@ -44,6 +44,14 @@ public class UserDto {
     }
 
     public void updateUser(User user) {
+        user.setActive(isActive);
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+    }
+
+    public void updateUser(UserCache user) {
         user.setActive(isActive);
         user.setUsername(username);
         user.setPassword(password);

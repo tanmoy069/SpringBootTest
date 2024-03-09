@@ -18,12 +18,12 @@ public class UserCacheServiceImpl implements UserCacheService {
 
     @Override
     public void save(UserCache userCache) {
-        hashOperations.putIfAbsent(hashReference, (long) userCache.getUserId(), userCache);
+        hashOperations.putIfAbsent(hashReference, userCache.getUserId(), userCache);
     }
 
     @Override
     public void update(UserCache userCache) {
-        hashOperations.put(hashReference, (long) userCache.getUserId(), userCache);
+        hashOperations.put(hashReference, userCache.getUserId(), userCache);
     }
 
     @Override

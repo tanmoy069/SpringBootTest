@@ -39,9 +39,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDto updateUser(UserDto userDto) {
-        User user = userDto.toUser();
+        User user = findUserById(userDto.getUserId());
+        userDto.updateUser(user);
         try {
+            UserCache userCache = userCacheService.findById(user.getUserId());
+            user = repository.save(user);
+            System.out.println("userCahce: " + userCache);
+            if (Objects.nonNull(userCache)) {
+                log.info("Updating user info in cache");
+                userDto.updateUser(userCache);
+                userCacheService.update(userCache);
+            } else {
+                log.info("Saving user info in cache");
+                userCacheService.save(UserDto.toUserCache(user));
+            }
             return UserDto.from(repository.save(user));
         } catch (Exception e) {
             log.error("Failed to save user due to: " + e.getMessage());

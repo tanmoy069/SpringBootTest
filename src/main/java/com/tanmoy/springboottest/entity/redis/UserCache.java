@@ -15,7 +15,7 @@ public class UserCache implements Serializable {
     @Serial
     private static final long serialVersionUID = -1L;
 
-    private int userId;
+    private Long userId;
     private String username;
     private String password;
     private boolean isActive;
