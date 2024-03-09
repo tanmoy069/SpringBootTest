@@ -1,9 +1,11 @@
 package com.tanmoy.springboottest.service.impl;
 
+import com.tanmoy.springboottest.constant.KafkaTopics;
 import com.tanmoy.springboottest.dto.UserDto;
 import com.tanmoy.springboottest.entity.User;
 import com.tanmoy.springboottest.entity.redis.UserCache;
 import com.tanmoy.springboottest.repository.UserRepository;
+import com.tanmoy.springboottest.service.KafkaProducerService;
 import com.tanmoy.springboottest.service.UserCacheService;
 import com.tanmoy.springboottest.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +23,17 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
     private final UserCacheService userCacheService;
+    private final KafkaProducerService kafkaProducerService;
     Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
-
 
     @Override
     @Transactional
     public UserDto saveUser(UserDto userDto) {
         User user = userDto.toUser();
         try {
-            user = repository.save(user);
             userCacheService.save(UserDto.toUserCache(user));
+            user = repository.save(user);
+            kafkaProducerService.sendMessage(UserDto.from(user), KafkaTopics.USER_EVENT);
             return UserDto.from(user);
         } catch (Exception e) {
             log.error("Failed to save user due to: " + e.getMessage());
@@ -77,7 +80,7 @@ public class UserServiceImpl implements UserService {
     public boolean deleteUser(Long id) {
         User user = findUserById(id);
         try {
-            repository.delete(user);
+            repository.deleteById(id);
             userCacheService.delete(id);
             return true;
         } catch (Exception e) {
