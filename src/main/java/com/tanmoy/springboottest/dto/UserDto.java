@@ -1,6 +1,7 @@
 package com.tanmoy.springboottest.dto;
 
 import com.tanmoy.springboottest.entity.User;
+import com.tanmoy.springboottest.entity.redis.UserCache;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
@@ -18,6 +19,18 @@ public class UserDto {
         UserDto dto = new UserDto();
         BeanUtils.copyProperties(user, dto);
         return dto;
+    }
+
+    public static UserDto from(UserCache userCache) {
+        UserDto dto = new UserDto();
+        BeanUtils.copyProperties(userCache, dto);
+        return dto;
+    }
+
+    public static UserCache toUserCache(User user) {
+        UserCache userCache = new UserCache();
+        BeanUtils.copyProperties(user, userCache);
+        return userCache;
     }
 
     public User toUser() {

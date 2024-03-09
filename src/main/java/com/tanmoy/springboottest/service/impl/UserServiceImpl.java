@@ -2,26 +2,35 @@ package com.tanmoy.springboottest.service.impl;
 
 import com.tanmoy.springboottest.dto.UserDto;
 import com.tanmoy.springboottest.entity.User;
+import com.tanmoy.springboottest.entity.redis.UserCache;
 import com.tanmoy.springboottest.repository.UserRepository;
+import com.tanmoy.springboottest.service.UserCacheService;
 import com.tanmoy.springboottest.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
+    private final UserCacheService userCacheService;
     Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
 
     @Override
+    @Transactional
     public UserDto saveUser(UserDto userDto) {
         User user = userDto.toUser();
         try {
-            return UserDto.from(repository.save(user));
+            user = repository.save(user);
+            userCacheService.save(UserDto.toUserCache(user));
+            return UserDto.from(user);
         } catch (Exception e) {
             log.error("Failed to save user due to: " + e.getMessage());
         }
@@ -41,6 +50,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findById(Long id) {
+        UserCache userCache = userCacheService.findById(id);
+        System.out.println("userCache: " + userCache);
+        if (Objects.nonNull(userCache)) {
+            log.info("User returning from redis cache");
+            return UserDto.from(userCache);
+        }
+        log.info("User returning from database");
         return UserDto.from(findUserById(id));
     }
 
